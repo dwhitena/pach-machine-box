@@ -1,0 +1,41 @@
+{
+  "pipeline": {
+    "name": "identify"
+  },
+  "transform": {
+    "image": "dwhitena/pachfacebox",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [
+	"./facebox &>/dev/null </dev/zero &",
+	"sleep 5",
+	"curl -X POST -F 'file=@/pfs/model/state.facebox' http://localhost:8080/facebox/state",
+        "sleep 15",
+	"for filename in /pfs/unidentified/*; do",
+    	    "rawname=`echo ${filename##*/}`",
+	    "outname=`echo ${rawname%.*}`.json",
+	    "curl -X POST -F 'file=@\"'\"$filename\"'\"' http://localhost:8080/facebox/check > /pfs/out/$outname",
+	"done"
+    ],
+    "env": {
+	"MB_KEY": "myMBKey"
+    }
+  },
+  "parallelism_spec": {
+    "strategy": "CONSTANT",
+    "constant": "1"
+  },
+  "inputs": [
+    {
+      "repo": {
+        "name": "unidentified"
+      },
+      "glob": "/*"
+    },
+    {
+      "repo": {
+        "name": "model"
+      },
+      "glob": "/"
+    }
+  ]
+}

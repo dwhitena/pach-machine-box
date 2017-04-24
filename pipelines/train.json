@@ -1,0 +1,37 @@
+{
+  "pipeline": {
+    "name": "model"
+  },
+  "transform": {
+    "image": "dwhitena/pachfacebox",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [
+	"./facebox &>/dev/null </dev/zero &",
+	"sleep 10",
+        "for filename in /pfs/training/*; do",
+    	    "rawname=`echo ${filename##*/}`",
+	    "woext=`echo ${rawname%.*}`",
+	    "person=$(echo $woext | sed 's/[^a-zA-Z]//g')",
+	    "echo $person",
+	    "curl -X POST -F 'file=@\"'\"$filename\"'\"' http://localhost:8080/facebox/teach?name=${person}&id=${rawname}",
+	    "sleep 1",
+	"done",
+	"curl http://localhost:8080/facebox/state > /pfs/out/state.facebox"
+    ],
+    "env": {
+	"MB_KEY": "myMBKey"
+    }
+  },
+  "parallelism_spec": {
+    "strategy": "CONSTANT",
+    "constant": "1"
+  },
+  "inputs": [
+    {
+      "repo": {
+        "name": "training"
+      },
+      "glob": "/"
+    }
+  ]
+}
