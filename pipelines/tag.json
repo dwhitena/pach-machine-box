@@ -19,7 +19,7 @@
     },
     {
       "repo": {
-        "name": "tags"
+        "name": "labels"
       },
       "glob": "/"
     },

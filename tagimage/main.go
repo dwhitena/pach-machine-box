@@ -15,7 +15,7 @@ import (
 const (
 	inFacesDir  = "/pfs/identify"
 	inImagesDir = "/pfs/unidentified"
-	inTagsDir   = "/pfs/tags"
+	inTagsDir   = "/pfs/labels"
 	outDir      = "/pfs/out"
 )
 
