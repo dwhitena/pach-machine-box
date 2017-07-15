@@ -3,39 +3,34 @@
     "name": "identify"
   },
   "transform": {
-    "image": "dwhitena/pachfacebox",
+    "image": "dwhitena/fbidentify",
     "cmd": [ "/bin/bash" ],
     "stdin": [
 	"./facebox &>/dev/null </dev/zero &",
 	"sleep 5",
-	"curl -X POST -F 'file=@/pfs/model/state.facebox' http://localhost:8080/facebox/state",
-        "sleep 15",
-	"for filename in /pfs/unidentified/*; do",
-    	    "rawname=`echo ${filename##*/}`",
-	    "outname=`echo ${rawname%.*}`.json",
-	    "curl -X POST -F 'file=@\"'\"$filename\"'\"' http://localhost:8080/facebox/check > /pfs/out/$outname",
-	"done"
+	"/goidentify -inModelDir=/pfs/model -inImageDir=/pfs/unidentified -outDir=/pfs/out"
     ],
     "env": {
 	"MB_KEY": "myMBKey"
     }
   },
   "parallelism_spec": {
-    "strategy": "CONSTANT",
     "constant": "1"
   },
-  "inputs": [
-    {
-      "repo": {
-        "name": "unidentified"
+  "input": {
+    "cross": [
+      {
+        "atom": {
+          "repo": "unidentified",
+          "glob": "/*"
+        }
       },
-      "glob": "/*"
-    },
-    {
-      "repo": {
-        "name": "model"
-      },
-      "glob": "/"
-    }
-  ]
+      {  
+        "atom": {
+          "repo": "model",
+          "glob": "/"
+        }
+      }
+    ]
+  }
 }
