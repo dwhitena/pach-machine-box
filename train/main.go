@@ -51,7 +51,7 @@ func main() {
 		}
 
 		// Wait for the training.
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * 2)
 
 		return nil
 	}); err != nil {
